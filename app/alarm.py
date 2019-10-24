@@ -1,13 +1,15 @@
 import time
 import daemon
 import webbrowser
+import datetime
+import pause
 
 class Alarm:
 
     PATH_TO_ERROR = '/app/template/error.html'
 
     def __init__(self):
-        self.alarm_delay = -1
+        self.trigger_datetime = None
 
         self.working_dir = ""
 
@@ -20,16 +22,16 @@ class Alarm:
     def start(self):
         with daemon.DaemonContext():
             self._begin_alarm_daemon(
-                    self.alarm_delay,
+                    self.trigger_datetime,
                     self.working_dir + self.path_to_reminder,
                     self.working_dir + Alarm.PATH_TO_ERROR)
         
     def _begin_alarm_daemon(self, 
-            delay, 
+            trigger_datetime, 
             full_path_to_reminder,
             full_path_to_error):
 
-        time.sleep(delay)
+        pause.until(trigger_datetime)
 
         try:
             webbrowser.open_new(full_path_to_reminder)
