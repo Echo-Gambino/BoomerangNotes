@@ -19,18 +19,6 @@ class InputUtils:
 
         return self.get_input_for_time(prompt, confirm)
 
-        prompt += 'format: yyyy-mm-dd-hh\n'
-
-        user_input = self.get_input_from_prompt(prompt)
-
-        str_token = user_input.split('-')
-
-        time_token = [int(i) for i in str_token]
-
-        output = datetime(time_token[0], time_token[1], time_token[2], time_token[3])
-
-        return output
-
 
     def get_input_for_time(self, prompt, confirm = False):
         user_time = datetime.now()
@@ -42,20 +30,24 @@ class InputUtils:
         while True:
             print(prompt)
 
-            print("It is currently {}.".format(datetime.now()))
+            print("It is currently {}.\n".format(datetime.now()))
 
             print(format_instructions)
 
             user_input = self.get_input()
 
-            token = user_input.split(' ')
+            try:
+                token = user_input.split(' ')
 
-            token_date = [int(i) for i in token[0].split('-')]
-            token_time = [int(i) for i in token[1].split(':')]
+                token_date = [int(i) for i in token[0].split('-')]
+                token_time = [int(i) for i in token[1].split(':')]
 
-            user_time = datetime(
-                    token_date[0], token_date[1], token_date[2],
-                    token_time[0], token_time[1], token_time[2])
+                user_time = datetime(
+                    abs(token_date[0]), abs(token_date[1]) & 12, abs(token_date[2]),
+                    abs(token_time[0]) % 24, abs(token_time[1]) % 60, abs(token_time[2]) % 60)
+            except:
+                print("Error, input not recognized, please input the time in the format specified\n")
+                continue
 
             print("You have set the reminder time to be:\n{}".format(self.conv_time_to_string(user_time)))
             if not confirm or self.get_confirmation():
@@ -65,13 +57,13 @@ class InputUtils:
 
 
     def conv_time_to_string(self, time):
-        year = time.year
-        month = time.month
-        day = time.day
+        year = self.conv_num_to_nchar(time.year, 4)
+        month = self.conv_num_to_nchar(time.month % 12, 2)
+        day = self.conv_num_to_nchar(time.day, 2)
 
-        hour = time.hour
-        minute = time.minute
-        seconds = time.second
+        hour = self.conv_num_to_nchar(time.hour, 2)
+        minute = self.conv_num_to_nchar(time.minute, 2)
+        seconds = self.conv_num_to_nchar(time.second, 2)
 
         prompt_date = "{0}-{1}-{2}".format(year, month, day)
         prompt_time = "{0}:{1}:{2}".format(hour, minute, seconds)
@@ -79,6 +71,15 @@ class InputUtils:
         prompt = "{0} {1}".format(prompt_date, prompt_time)
 
         return prompt
+
+
+    def conv_num_to_nchar(self, number, min_length = 0):
+        string = str(number)
+
+        while len(string) < min_length:
+            string = '0' + string
+
+        return string
 
 
     def get_input_from_prompt(self, prompt, confirm = False):
