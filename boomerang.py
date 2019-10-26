@@ -10,7 +10,7 @@ def main():
     #   description
     #   reminder time
 
-    f = form.Form()
+    f = form.Form(gen_working_dir())
     
     f.start_form()
 
@@ -22,7 +22,7 @@ def main():
         data = file.read()
 
         data = data.replace('{0}', reminder.title)
-        data = data.replace('{1}', reminder.descr)
+        data = data.replace('{1}', reminder.descr.replace('\n', '<br>\n'))
 
         reminder_webpage = data
 

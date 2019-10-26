@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 
 class InputUtils:
@@ -9,9 +10,10 @@ class InputUtils:
         return self.get_input_from_prompt(prompt, confirm)
 
     
-    def get_descr(self, confirm = False):
+    def get_descr(self, working_dir, confirm = False):
         prompt = "Please add to the reminder by providing a description."
-        return self.get_input_from_prompt(prompt, confirm)
+        return self.get_input_from_textfile(prompt, working_dir, confirm)
+        # return self.get_input_from_prompt(prompt, confirm)
 
 
     def get_time(self, confirm = False):
@@ -82,6 +84,60 @@ class InputUtils:
         return string
 
 
+    def get_input_from_textfile(self, prompt, working_dir, confirm):
+        user_input = ''
+
+        # generate the FULL path of the temporary file
+        #working_dir = os.path.dirname(os.path.realpath(__file__))
+        tmpfile_path = '/data/temp/tmp.txt'
+        full_path = working_dir + tmpfile_path
+
+        # wipe all data from full_path
+        open(full_path, 'w').close()
+
+        while True:
+            print(prompt)
+
+            # construct command (text_editor and full path) and execute it
+            # to open the designated text editor that the user can write into
+            text_editor = 'mousepad'
+            command = '{0} {1}'.format(text_editor, full_path)
+            os.system(command)
+
+            # open the same file (which should be updated by the user)
+            # and gather all the text within it to be placed into the data variable
+            data = ''
+            with open(full_path, 'r') as file:
+                data = file.read()
+
+            # clean out the user data and place it into user_input
+            user_input = data.strip()
+
+            # print out the result of reading the tmp file
+            # just to that the user can preview what they wrote down
+            print('Here is what you have wrote down:')
+            print(user_input)
+            
+            if not confirm:
+                break
+            else:
+                if (self.get_confirmation()):
+                    break
+                else:
+                    edit_prompt = "would you like to continue where you left off (y), or would you like to write the description from scratch (n)?"
+                    user_will_edit = self.get_confirmation(prompt)
+                    if not user_will_edit:
+                        open(full_path, 'w').close()
+                    continue
+
+        try:
+            os.remove(full_path)
+        except:
+            print('Error, could not remove {0}'.format(full_path))
+
+        return user_input
+
+
     def get_input_from_prompt(self, prompt, confirm = False):
         user_input = ''
 
@@ -95,7 +151,7 @@ class InputUtils:
         return user_input
 
 
-    def get_confirmation(self, default = 'y'):
+    def get_confirmation(self, prompt = 'Confirm?', default = 'y'):
 
         YES = True
         NO = False
@@ -119,7 +175,7 @@ class InputUtils:
 
         while True:
 
-            print('Confirm? {0}/{1}'.format(option0, option1))
+            print('{0} {1}/{2}'.format(prompt, option0, option1))
 
             user_input = self.get_input(True).replace(' ', '').replace('\n', '').replace('\t', '')
 
