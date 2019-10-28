@@ -23,6 +23,30 @@ class Reminder:
         return output
 
 
+    def conv_string_to_time(self, string):
+        time = None
+
+        string = string.strip()
+        try:
+            token = string.split(' ')
+
+            token_date = [int(i) for i in token[0].split('-')]
+            token_time = [int(i) for i in token[1].split(':')]
+
+            time = datetime(
+                abs(token_date[0]), 		# year
+                abs(token_date[1]) % 12, 	# month
+                abs(token_date[2]), 		# day
+                abs(token_time[0]) % 24, 	# hour
+                abs(token_time[1]) % 60, 	# minute
+                abs(token_time[2]) % 60 	# second
+            )			
+        except:
+            time = None
+
+        return time
+
+
     def conv_time_to_string(self, time):
         year = self.conv_num_to_nchar(time.year, 4)
         month = self.conv_num_to_nchar(time.month, 2)
@@ -39,7 +63,7 @@ class Reminder:
 
         return prompt
 
-
+    
     def conv_num_to_nchar(self, number, min_length = 0):
         string = str(number)
 
@@ -47,7 +71,6 @@ class Reminder:
             string = '0' + string
 
         return string
-
 
 
 

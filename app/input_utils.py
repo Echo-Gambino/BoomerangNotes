@@ -45,7 +45,7 @@ class InputUtils:
                 token_time = [int(i) for i in token[1].split(':')]
 
                 user_time = datetime(
-                    abs(token_date[0]), abs(token_date[1]) & 12, abs(token_date[2]),
+                    abs(token_date[0]), abs(token_date[1]) % 12, abs(token_date[2]),
                     abs(token_time[0]) % 24, abs(token_time[1]) % 60, abs(token_time[2]) % 60)
             except:
                 print("Error, input not recognized, please input the time in the format specified\n")

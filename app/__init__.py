@@ -11,4 +11,4 @@ threading = threading
 os = os
 
 
-from app import model, alarm, form, input_utils
+from app import model, alarm, form, input_utils, cli_utils
