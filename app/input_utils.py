@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
-
+import subprocess
+from time import sleep
 
 class InputUtils:
 
@@ -100,9 +101,8 @@ class InputUtils:
 
             # construct command (text_editor and full path) and execute it
             # to open the designated text editor that the user can write into
-            text_editor = 'mousepad'
-            command = '{0} {1}'.format(text_editor, full_path)
-            os.system(command)
+            text_editor = 'kate'
+            subprocess.Popen([text_editor, full_path]).wait()
 
             # open the same file (which should be updated by the user)
             # and gather all the text within it to be placed into the data variable
@@ -125,7 +125,7 @@ class InputUtils:
                     break
                 else:
                     edit_prompt = "would you like to continue where you left off (y), or would you like to write the description from scratch (n)?"
-                    user_will_edit = self.get_confirmation(prompt)
+                    user_will_edit = self.get_confirmation(edit_prompt)
                     if not user_will_edit:
                         open(full_path, 'w').close()
                     continue
