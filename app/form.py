@@ -1,13 +1,13 @@
 from app import model
 from app import input_utils
 
+
 class Form:
 
     GAP = 2 * "\n"
 
-    def __init__(self, working_dir):
+    def __init__(self):
         self.reminder = model.Reminder()
-        self.working_dir = working_dir
         pass
 
 
@@ -23,7 +23,7 @@ class Form:
         while True:
             self.reminder.title = iUtils.get_title(True)
 
-            self.reminder.descr = iUtils.get_descr(self.working_dir, True)
+            self.reminder.descr = iUtils.get_descr(True)
 
             self.reminder.alarm = iUtils.get_time(True)
 

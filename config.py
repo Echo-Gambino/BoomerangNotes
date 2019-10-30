@@ -11,6 +11,10 @@ class Config:
 
     ERROR_PATH = WORKING_DIR + '/app/template/error.html'
 
+    TEMP_PATH = WORKING_DIR + '/data/temp/tmp.txt'
+
+    TEXT_EDITOR = 'kate'
+
     def get_reminder_path(self, title):
         output = '{0}/data/{1}_Reminder.html'.format(self.WORKING_DIR, title)
         return output

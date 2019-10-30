@@ -1,10 +1,13 @@
 from app import *
+from app import Config
 import time
 import daemon
 import argparse
 
-DATA_PATH = '/data/'
-APP_DESCRIPTION = 'An application that reminds you of important information!'
+
+config = Config()
+
+APP_DESCRIPTION = config.APP_DESCRIPTION
 
 def main():
     # What is needed
@@ -27,31 +30,6 @@ def main():
 
     return
 
-    '''
-    f = form.Form(gen_working_dir())
-    
-    f.start_form()
-
-    reminder = f.get_reminder()
-
-    reminder_webpage = ""
-
-    with open('app/template/base.html', 'r') as file:
-        data = file.read()
-
-        data = data.replace('{0}', reminder.title)
-        data = data.replace('{1}', reminder.descr.replace('\n', '<br>\n'))
-
-        reminder_webpage = data
-
-    with open('.' + gen_reminder_path(reminder), 'w') as file:
-        data = file.write(reminder_webpage)
-
-    set_alarm(reminder)
-
-    return
-    '''
-
 
 def get_reminder_via_import(cli):
     data = cli.get_imported_data()
@@ -67,21 +45,13 @@ def get_reminder_via_import(cli):
 
 
 def get_reminder_via_form():
-    f = form.Form(gen_working_dir())
+    f = form.Form()
 
     f.start_form()
 
     reminder = f.get_reminder()
 
     return reminder
-
-def gen_working_dir():
-    return os.path.dirname(os.path.realpath(__file__))
-
-
-def gen_reminder_path(reminder):
-    output = "{0}{1}_Reminder.html".format(DATA_PATH, reminder.title)
-    return output
 
 
 def conv_reminder_to_webpage(reminder):
@@ -95,7 +65,7 @@ def conv_reminder_to_webpage(reminder):
 
         reminder_webpage = data
 
-    with open('.' + gen_reminder_path(reminder), 'w') as file:
+    with open(config.get_reminder_path(reminder.title), 'w') as file:
         data = file.write(reminder_webpage)
 
     return
@@ -169,8 +139,7 @@ def set_alarm(reminder):
     reminder_daemon = alarm.Alarm()
 
     reminder_daemon.trigger_datetime = reminder.alarm
-    reminder_daemon.path_to_reminder = gen_reminder_path(reminder)
-    reminder_daemon.working_dir = gen_working_dir()
+    reminder_daemon.reminder_path = config.get_reminder_path(reminder.title)
 
     reminder_daemon.start()
 

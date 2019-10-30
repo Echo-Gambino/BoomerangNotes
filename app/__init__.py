@@ -1,11 +1,10 @@
-# from app.model import Reminder
 import webbrowser
 import keyboard
 import threading
 import os
+from config import Config
 
 keyboard = keyboard
-# reminder = Reminder
 webbrowser = webbrowser
 threading = threading
 os = os

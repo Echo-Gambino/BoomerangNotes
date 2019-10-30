@@ -2,6 +2,13 @@ from datetime import datetime
 import os
 import subprocess
 from time import sleep
+from app import Config
+
+
+config = Config()
+
+TEXT_EDITOR = config.TEXT_EDITOR
+TEMP_PATH = config.TEMP_PATH
 
 class InputUtils:
 
@@ -11,10 +18,20 @@ class InputUtils:
         return self.get_input_from_prompt(prompt, confirm)
 
     
-    def get_descr(self, working_dir, confirm = False):
+    def get_descr(self, confirm = False):
         prompt = "Please add to the reminder by providing a description."
-        return self.get_input_from_textfile(prompt, working_dir, confirm)
-        # return self.get_input_from_prompt(prompt, confirm)
+        output = ""
+
+        if (TEXT_EDITOR != ""):
+            try:
+                output = self.get_input_from_textfile(prompt, confirm)
+            except:
+                print("\n\n\n\nError: Something went wrong with getting the input from \'{0}\', the text editor, please input the description through this interface instead.\n".format(TEXT_EDITOR))
+                output = self.get_input_from_prompt(prompt, confirm)
+        else:
+            output = self.get_input_from_prompt(prompt, confirm)
+
+        return output
 
 
     def get_time(self, confirm = False):
@@ -85,29 +102,23 @@ class InputUtils:
         return string
 
 
-    def get_input_from_textfile(self, prompt, working_dir, confirm):
+    def get_input_from_textfile(self, prompt, confirm):
         user_input = ''
 
-        # generate the FULL path of the temporary file
-        #working_dir = os.path.dirname(os.path.realpath(__file__))
-        tmpfile_path = '/data/temp/tmp.txt'
-        full_path = working_dir + tmpfile_path
-
-        # wipe all data from full_path
-        open(full_path, 'w').close()
+        # wipe all data from TEMP_PATH
+        open(TEMP_PATH, 'w').close()
 
         while True:
             print(prompt)
 
             # construct command (text_editor and full path) and execute it
             # to open the designated text editor that the user can write into
-            text_editor = 'kate'
-            subprocess.Popen([text_editor, full_path]).wait()
+            subprocess.Popen([TEXT_EDITOR, TEMP_PATH]).wait()
 
             # open the same file (which should be updated by the user)
             # and gather all the text within it to be placed into the data variable
             data = ''
-            with open(full_path, 'r') as file:
+            with open(TEMP_PATH, 'r') as file:
                 data = file.read()
 
             # clean out the user data and place it into user_input
@@ -127,13 +138,13 @@ class InputUtils:
                     edit_prompt = "would you like to continue where you left off (y), or would you like to write the description from scratch (n)?"
                     user_will_edit = self.get_confirmation(edit_prompt)
                     if not user_will_edit:
-                        open(full_path, 'w').close()
+                        open(TEMP_PATH, 'w').close()
                     continue
 
         try:
-            os.remove(full_path)
+            os.remove(TEMP_PATH)
         except:
-            print('Error, could not remove {0}'.format(full_path))
+            print('Error, could not remove {0}'.format(TEMP_PATH))
 
         return user_input
 
