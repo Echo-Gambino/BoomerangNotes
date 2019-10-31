@@ -12,12 +12,13 @@ TEMP_PATH = config.TEMP_PATH
 
 class InputUtils:
 
-
+    # retrieve the user's inputs for prompting a 'title' input
     def get_title(self, confirm = False):
         prompt = "What is the subject of your reminder?"
         return self.get_input_from_prompt(prompt, confirm)
 
     
+    # retrieve the user's inputs for prompting a 'description' input
     def get_descr(self, confirm = False):
         prompt = "Please add to the reminder by providing a description."
         output = ""
@@ -34,74 +35,139 @@ class InputUtils:
         return output
 
 
+    # retrieve the user's inputs for prompting a 'time' input
     def get_time(self, confirm = False):
         prompt = 'Please set the time at which you would like to be reminded at:\n'
-
         return self.get_input_for_time(prompt, confirm)
 
 
+    # guides the user through to input value(s) that can construct a datetime() object 
     def get_input_for_time(self, prompt, confirm = False):
+        # initializes the user's set time (simply to declare it)
         user_time = datetime.now()
 
+        # sets up the formatting instructions on how to input values
+        # that the program can parse useful information from.
         format_instructions = "Please input in this format:\nYYYY-MM-DD hh:mm:ss"
 
-        cur_time = datetime.now()
-
         while True:
+            # print out a custom message to prompt the user
             print(prompt)
-
+            # update the user on the current time (designed to be used as a reference point)
             print("It is currently {}.\n".format(datetime.now()))
-
+            # print out the formatting instructions to ensure that
+            # the user can figure out how to submit the proper input.
             print(format_instructions)
 
+            # retrieve the user's input in string form
             user_input = self.get_input()
 
+            # this try & except statement is make an attempt to
+            # parse user_input's values and convert it into datetime,
+            # if the attempt fails, it prevents crashing 
+            # (this is because we 99.99% know that this is due to an invalid string)
+            # and restarts this process of retrieving user inputs and converting it to datetime.
             try:
+                # As a way to help understand why this code performs 
+                # the operation below, here is an example of a 'proper' input:
+                #
+                # 2010-04-29 23:21:01
+                #
+
+                # split the input by ' '
+                # from the example input above, it would result in:
+                #
+                # ['2010-04-29', '23:21:01']
                 token = user_input.split(' ')
 
+                # split the inputs by '-' and ':' for the first and second token respectively
+                # then convert the resulting values in the list to an integer
+                # from the example input, it would result in:
+                #
+                # token_date = [2010, 4, 29]
+                # token_time = [23, 21, 1]
                 token_date = [int(i) for i in token[0].split('-')]
                 token_time = [int(i) for i in token[1].split(':')]
 
+                # place all the values of token_date and token_time into datetime(...)
                 user_time = datetime(
-                    abs(token_date[0]), abs(token_date[1]) % 12, abs(token_date[2]),
+                    abs(token_date[0]), abs(token_date[1]) % 13, abs(token_date[2]),
                     abs(token_time[0]) % 24, abs(token_time[1]) % 60, abs(token_time[2]) % 60)
             except:
+                # print an error statement and restart the date input collection process over again
                 print("Error, input not recognized, please input the time in the format specified\n")
                 continue
 
+            # print out a little message to allow the user see if this is what they truly want 
+            # (good for debugging personally speaking)
             print("You have set the reminder time to be:\n{}".format(self.conv_time_to_string(user_time)))
+
+            # if we seek confirmation (from the variable confirm),
+            # then prompt the user for confirmation,
+            # if the user confirms positively (normally a 'yes')
+            # then break from the infinite loop and continue with the execution
             if not confirm or self.get_confirmation():
                 break
 
         return user_time
 
 
+    # a function that converts a datetime object to a string of the format 'YYYY:MM:DD hh:mm:ss'
     def conv_time_to_string(self, time):
+        # retrieve the year, month, and day 
+        # (also adds '0's to ensure values like years equalling '230' is '0230')
         year = self.conv_num_to_nchar(time.year, 4)
         month = self.conv_num_to_nchar(time.month % 12, 2)
         day = self.conv_num_to_nchar(time.day, 2)
 
+        # retrieve the hour, minute, and seconds
+        # (also adds '0's to ensure values like seconds equalling '0' is '00')
         hour = self.conv_num_to_nchar(time.hour, 2)
         minute = self.conv_num_to_nchar(time.minute, 2)
         seconds = self.conv_num_to_nchar(time.second, 2)
 
+        # slot the values into the strings to form a full date string and a full time string
         prompt_date = "{0}-{1}-{2}".format(year, month, day)
         prompt_time = "{0}:{1}:{2}".format(hour, minute, seconds)
 
+        # combine the date string and time string into one for the output
         prompt = "{0} {1}".format(prompt_date, prompt_time)
 
         return prompt
 
 
+    # a helper function that converts a number to an string 
+    # such that the string's length is at least equal to the value of min_length
+    # by adding '0's to the left side of the string
+    #
+    # example:
+    #   arguments:
+    #       number = 1203
+    #       min_length = 6
+    #   returns:
+    #       output = '001203'
+    #
+    #   arguments:
+    #       number = 1203
+    #       min_length = 4
+    #   returns:
+    #       output = '1203'
+    #
     def conv_num_to_nchar(self, number, min_length = 0):
+        # converts number into a string
         string = str(number)
 
+        # while the string's length is less than the value of min_length,
+        # add a '0' to the LEFT side of string
         while len(string) < min_length:
             string = '0' + string
 
         return string
 
 
+    # get the user's input from a designated, temporary textfile using a texteditor specified by config.py
+    # the reason why this is used is to allow the user to input data much in the same way like a normal,
+    # modern day textbox would be (like mouse support, copy and paste, etc)
     def get_input_from_textfile(self, prompt, confirm):
         user_input = ''
 
@@ -130,17 +196,28 @@ class InputUtils:
             print(user_input)
             
             if not confirm:
+                # take no further confirmation from the user
                 break
             else:
                 if (self.get_confirmation()):
+                    # if the confirmation from the user is positive (like a 'yes' response)
+                    # then continue to execution past the infinite loop
                     break
                 else:
+                    # set up a prompt for editing
                     edit_prompt = "would you like to continue where you left off (y), or would you like to write the description from scratch (n)?"
+                    # get confirmation as to whether or not the user would like to retain their progress or not
                     user_will_edit = self.get_confirmation(edit_prompt)
                     if not user_will_edit:
+                        # if the confirmation is negative, then that means that they wish to restart.
+                        # so set the temporary file to a blank slate
                         open(TEMP_PATH, 'w').close()
                     continue
 
+        # once we have what we ultimately need (the user's input in the form of a string)
+        # attempt to destroy the temporary file just so that we don't leave anything sensitive behind
+        # but if something goes wrong (as it normally happens in terms of getting information from IO)
+        # we notify the user of this error and explain that we cannot remove it.
         try:
             os.remove(TEMP_PATH)
         except:
@@ -149,19 +226,26 @@ class InputUtils:
         return user_input
 
 
+    # gets the input from the command line of the terminal (via python3's input() function)
     def get_input_from_prompt(self, prompt, confirm = False):
         user_input = ''
 
         while True:
+            # print out the prompt
             print(prompt)
+
+            # retrieve the user's input (essentially input().strip())
             user_input = self.get_input()
 
+            # ask for confirmation to continue or restart if confirm == True
             if not confirm or self.get_confirmation():
                 break
 
         return user_input
 
 
+    # the function is a generic helper function that asks the user to input a binary answer 
+    # (usually 'yes' or 'no'), this is normally used for confirming the user's inputs.
     def get_confirmation(self, prompt = 'Confirm?', default = 'y'):
 
         YES = True
@@ -175,6 +259,10 @@ class InputUtils:
         option0 = 'y'
         option1 = 'n'
 
+        # set the default ('' input or *pressing enter*) to result in a True or False
+        # example: 
+        #   if default == 'y', then pressing enter would make this function return True
+        #   if default == 'n', then pressing enter would make this function return False
         if default.lower() == 'y':
             input_dict[''] = YES
             option0 = '[Y]'
@@ -182,14 +270,19 @@ class InputUtils:
             input_dict[''] = NO
             option1 = '[N]'
 
+        # assume that the user input is already 'y'
         user_input = 'y'
 
         while True:
-
+            # print the prompt and its options
             print('{0} {1}/{2}'.format(prompt, option0, option1))
 
+            # get the input (and clean it)
             user_input = self.get_input(True).replace(' ', '').replace('\n', '').replace('\t', '')
 
+            # if user_input isn't valid (not in the input_dict's key values)
+            # then it prints an error message and restarts.
+            # else it breaks out of the loop and continues the execution
             if not user_input in input_dict.keys():
                 print("Error, invalid input, please try typing \'y\' or \'n\'.")
                 continue
@@ -198,17 +291,20 @@ class InputUtils:
 
         return input_dict[user_input]
 
-
+    # a helper function that retrieves the user's input 
+    # and does basic data sanitization (like removing beginning and trailing whitespace)
     def get_input(self, lowercase = False):
-
+        # retrieves the user's input and strips it of beginning and trailing whitespace
         user_input = input("< ").strip()
 
         if (lowercase):
+            # if lowercase == True, then lowercase it.
             user_input = user_input.lower()
 
         return user_input
 
 
+    # a simple display output to print out a string in a noticable fashion
     def debug_display_output(self, string):
         stars = 3 * "_"
 
