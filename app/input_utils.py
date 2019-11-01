@@ -117,7 +117,7 @@ class InputUtils:
         # retrieve the year, month, and day 
         # (also adds '0's to ensure values like years equalling '230' is '0230')
         year = self.conv_num_to_nchar(time.year, 4)
-        month = self.conv_num_to_nchar(time.month % 12, 2)
+        month = self.conv_num_to_nchar(time.month, 2)
         day = self.conv_num_to_nchar(time.day, 2)
 
         # retrieve the hour, minute, and seconds
