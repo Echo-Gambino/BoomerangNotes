@@ -66,7 +66,7 @@ def get_reminder_via_form():
     f = form.Form()
 
     # start the form (a one-stop-shop for guiding the user to fill out fields such as the title, description, time, etc)
-    f.start_form()
+    f.start_form(True)
 
     # retrieve the reminder from the form object
     reminder = f.get_reminder()
