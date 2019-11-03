@@ -6,11 +6,18 @@ import argparse
 
 
 config = Config()
-
 APP_DESCRIPTION = config.APP_DESCRIPTION
 
 
-# main function where all processes of boomerang.py begin
+"""
+Execute the main process the boomerang program
+
+Args:
+    None
+
+Returns:
+    None
+"""
 def main():
     # set up cli utilities object with the app's description on '-h' as object
     cli = cli_utils.CliUtils(APP_DESCRIPTION)
@@ -38,7 +45,16 @@ def main():
     return
 
 
-# the function that executes the 'import file' protocol 
+"""
+Retrieve the reminder object from importing the text file
+
+Args:
+    cli: cli helper object that conveniently retrieves the arguments that is set by the user
+
+Returns:
+    reminder: The reminder object that contains all that data that is related to it. 
+                (title, description, the alarm time)
+"""
 def get_reminder_via_import(cli):
     # using the given cli object, retrieve the data from
     # the user's specified file (in the form of a string) 
@@ -60,7 +76,16 @@ def get_reminder_via_import(cli):
     return reminder
 
 
-# the function that executes the 'prompt fillable form' protocol
+"""
+Retrieve the reminder object by guiding the user to input the 
+reminder's data in a form-like format. (title, description, the alarm time)
+
+Args:
+    None
+
+Returns:
+    reminder: Reminder object
+"""
 def get_reminder_via_form():
     # initialize the Form() object
     f = form.Form()
@@ -74,7 +99,15 @@ def get_reminder_via_form():
     return reminder
 
 
-# the function that takes the data within the reminder to generate a '.html' file
+"""
+The function that takes the data within the reminder to generate a '.html' file
+
+Args:
+    reminder: The Reminder object
+
+Returns:
+    None
+"""
 def conv_reminder_to_webpage(reminder):
     # the webpage's contents in HTML format
     reminder_webpage = ""
@@ -99,8 +132,16 @@ def conv_reminder_to_webpage(reminder):
     return
 
 
-# from the given data (str), parse it to retrieve the 
-# title, description, and reminder time and compile it to a reminder object
+"""
+Parse the given data (in string form) and 
+convert the information into a reminder object.
+
+Args:
+    data: A string with multiple lines.
+
+Returns:
+    reminder: The Reminder object that data was converted to.
+"""
 def file_parser(data):
     # if data isn't valid, then return with nothing (as there is nothing to parse)
     if data == None: return None
@@ -130,6 +171,21 @@ def file_parser(data):
     return reminder
 
 
+"""
+Process a line with a '#' character at the beginning of the string and
+place the data into one or more of reminder's fields if applicable.
+Example:
+    #<metadata category>: <value>
+
+Args:
+    reminder: (Can be mutated within this function) 
+                The reminder object that values can be placed into (if applicable).
+    line: (The string object) that has is assumed to have a 
+            '#' character at the beginning of the string.
+
+Returns:
+    None
+"""
 def process_hash(reminder, line):
     # IF the given line is a valid metadata tag, then it should follow this format
     #
@@ -181,8 +237,16 @@ def process_hash(reminder, line):
     return
 
 
-# a method that conveniently sets an alarm daemon that pops up a webbrowser
-# displaying the reminder's information at a designated time.
+"""
+Conveniently sets an alarm daemon that pops up a webbrowser displaying
+the reminder's information at a designated time.
+
+Args:
+    reminder: The Reminder object that the alarm will remind the user of
+
+Returns:
+    None
+"""
 def set_alarm(reminder):
     # initialize the Alarm() object
     reminder_daemon = alarm.Alarm()

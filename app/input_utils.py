@@ -10,15 +10,35 @@ config = Config()
 TEXT_EDITOR = config.TEXT_EDITOR
 TEMP_PATH = config.TEMP_PATH
 
+
 class InputUtils:
 
     # retrieve the user's inputs for prompting a 'title' input
+    """
+    Retrieve the user's inputs for prompting a 'title' input
+
+    Args:
+        self: The class object
+        confirm: A flag to dictate if confirmation will be prompted after submitting the input
+
+    Returns:
+        A string object resulted from guiding the user to input a 'title'
+    """
     def get_title(self, confirm = False):
         prompt = "What is the subject of your reminder?"
         return self.get_input_from_prompt(prompt, confirm)
 
     
-    # retrieve the user's inputs for prompting a 'description' input
+    """
+    Retrieve the user's inputs for prompting a 'description' input
+
+    Args:
+        self: The class object
+        confirm: A flag to dictate if confirmation will be prompted after submitting the input
+
+    Returns:
+        A string object resulted from guiding the user to input a 'description'
+    """
     def get_descr(self, confirm = False):
         prompt = "Please add to the reminder by providing a description."
         output = ""
@@ -35,13 +55,33 @@ class InputUtils:
         return output
 
 
-    # retrieve the user's inputs for prompting a 'time' input
+    """
+    Retrieve the user's inputs for prompting a 'time' input
+
+    Args:
+        self: The class object
+        confirm: A flag to dictate if confirmation will be prompted after submitting the input
+
+    Returns:
+        A datetime object resulted from guiding the user to input a 'time'
+    """
     def get_time(self, confirm = False):
         prompt = 'Please set the time at which you would like to be reminded at:\n'
         return self.get_input_for_time(prompt, confirm)
 
 
-    # guides the user through to input value(s) that can construct a datetime() object 
+    # guides the user through to input value(s) that can construct a datetime() object
+    """
+    Guides the user through to input value(s) that can construct a datetime() object
+
+    Args:
+        self: The class object
+        prompt: The prompt string thats displayed before the input is available to be retrieved
+        confirm: A flag to dictate if confirmation will be prompted after submitting the input
+
+    Returns:
+        The datetime object resulted from the user's input
+    """
     def get_input_for_time(self, prompt, confirm = False):
         # initializes the user's set time (simply to declare it)
         user_time = datetime.now()
@@ -112,7 +152,17 @@ class InputUtils:
         return user_time
 
 
-    # a function that converts a datetime object to a string of the format 'YYYY:MM:DD hh:mm:ss'
+    """
+    Converts the a datetime object to a string of the format 'YYY-MM-DD hh:mm:ss'
+
+    Args:
+        self: The class object
+        time: The datetime object that will be converted to string
+
+    Returns:
+        prompt: A string describing the information from the datetime object 
+                (e.g. year, month, day, hour, minute, second)
+    """
     def conv_time_to_string(self, time):
         # retrieve the year, month, and day 
         # (also adds '0's to ensure values like years equalling '230' is '0230')
@@ -135,24 +185,33 @@ class InputUtils:
 
         return prompt
 
+    """
+    A helper function that converts a number to an string such that the string's length 
+    is at least equal to the value of min_length by adding '0's to the left side of the string
+    
+    EXAMPLE:
+        arguments:
+            number = 1203
+            min_length = 6
+        returns:
+            output = '001203'
+    
+        arguments:
+            number = 1203
+            min_length = 4
+        returns:
+            output = '1203'
+    
+    Args:
+        self: The class object
+        number: The integer that will be converted to string
+        min_length: The minimum length (number of digits) that 
+                    the converted string must at least have
 
-    # a helper function that converts a number to an string 
-    # such that the string's length is at least equal to the value of min_length
-    # by adding '0's to the left side of the string
-    #
-    # example:
-    #   arguments:
-    #       number = 1203
-    #       min_length = 6
-    #   returns:
-    #       output = '001203'
-    #
-    #   arguments:
-    #       number = 1203
-    #       min_length = 4
-    #   returns:
-    #       output = '1203'
-    #
+    Returns:
+        string: The number's string form, and '0's to the left of the given number's value
+                if the number's digits are less than the value of min_length
+    """
     def conv_num_to_nchar(self, number, min_length = 0):
         # converts number into a string
         string = str(number)
@@ -164,11 +223,24 @@ class InputUtils:
 
         return string
 
+    
+    """
+    Get the user's input from a designated, temporary textfile 
+    using a texteditor specified by config.py
 
-    # get the user's input from a designated, temporary textfile using a texteditor specified by config.py
-    # the reason why this is used is to allow the user to input data much in the same way like a normal,
-    # modern day textbox would be (like mouse support, copy and paste, etc)
-    def get_input_from_textfile(self, prompt, confirm):
+    The reason why this is used is to allow the user to input data 
+    much in the same way like a normal, modern day textbox would be 
+    (like mouse support, copy and paste, etc)
+
+    Args:
+        self: The class object
+        prompt: The prompt string thats displayed before the input is available to be retrieved
+        confirm: A flag to dictate if confirmation will be prompted after submitting the input
+
+    Returns:
+        The string object resulted from the user's input
+    """
+    def get_input_from_textfile(self, prompt, confirm = False):
         user_input = ''
 
         # wipe all data from TEMP_PATH
@@ -225,8 +297,17 @@ class InputUtils:
 
         return user_input
 
+    """
+    Gets the input from the command line of the terminal (via python3's input() function)
 
-    # gets the input from the command line of the terminal (via python3's input() function)
+    Args:
+        self: The class object
+        prompt: The prompt string that displayed before the input is available to be retrieved
+        confirm: A flag to dictate if confirmation will be prompted after submitting the input
+
+    Returns:
+        The string object resulted from the user's input
+    """
     def get_input_from_prompt(self, prompt, confirm = False):
         user_input = ''
 
@@ -244,8 +325,20 @@ class InputUtils:
         return user_input
 
 
-    # the function is a generic helper function that asks the user to input a binary answer 
-    # (usually 'yes' or 'no'), this is normally used for confirming the user's inputs.
+    """
+    The function is a generic helper function that asks the user to input a binary answer 
+    (usually 'yes' or 'no'), this is normally used for confirming the user's inputs.
+
+    Args:
+        self: The class object
+        prompt: The prompt string thats displayed before the input is available to be retrieved
+        default: The submittion that will be defaulted if the user selects nothing
+                    (i.e. inputs a whitespace, or presses the enter key)
+
+    Returns:
+        A boolean (True or False) to determine if the confirmation
+        is received positively (True) or negatively (False)
+    """
     def get_confirmation(self, prompt = 'Confirm?', default = 'y'):
 
         YES = True
@@ -291,8 +384,20 @@ class InputUtils:
 
         return input_dict[user_input]
 
-    # a helper function that retrieves the user's input 
-    # and does basic data sanitization (like removing beginning and trailing whitespace)
+
+    """
+    A helper function that retrieves the user's input 
+    and does basic data sanitization (like removing beginning and trailing whitespace)
+
+    Args:
+        self: The class object
+        lowercase: The flag that determines if the returned value is 
+                    converted to all lowercase characters or not
+
+    Returns:
+        user_input: A string object from the user's input 
+                    in the terminal interface of the program
+    """
     def get_input(self, lowercase = False):
         # retrieves the user's input and strips it of beginning and trailing whitespace
         user_input = input("< ").strip()
@@ -304,7 +409,16 @@ class InputUtils:
         return user_input
 
 
-    # a simple display output to print out a string in a noticable fashion
+    """
+    A simple display output to print out a string in a noticable fashion
+
+    Args:
+        self: The class object
+        string: The given string to be displayed
+
+    Returns:
+        None
+    """
     def debug_display_output(self, string):
         stars = 3 * "_"
 
