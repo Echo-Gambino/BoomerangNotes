@@ -23,7 +23,10 @@ Compatibility:
  * Command-line interface can only be used in Linux (because it uses a texteditor called 'mousepad', will add support for 'notepad' for Windows compatibility)
 
 Requirements:
-1. mousepad (a text editor for linux)
+1. A text editor
+	* (linux) kate
+	* (MacOS) TextEdit
+	* (Windows) Notepad
 2. Python3
 3. PIP
 4. Python3 libraries within `requirements.txt`, execute `pip install -r requirements.txt` for easy setup
